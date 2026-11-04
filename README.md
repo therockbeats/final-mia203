@@ -48,6 +48,26 @@ Para regenerar las tablas y la figura desde el notebook original del grupo:
 python scripts/import_final_results.py --notebook ../01_B1_YOLOv5s.ipynb --figures
 ```
 
+## Reevaluación en Corrida Local
+
+Los resultados de validación se guardan en `results/workstation/grupo/`:
+
+| Archivo | Contenido |
+|---|---|
+| `validacion_yolov5.csv` | Métricas de YOLOv5 por modelo y clase |
+| `comparison.csv`, `per_class.csv` | Métricas del evaluador complementario |
+| `umbrales_gun.csv` | Comparación de confianza para gun |
+| `rendimiento.csv` | Tiempo, FPS y memoria |
+| `resumen_automatico.md` | Resumen generado por `scripts/export_workstation.py` |
+
+El diagnóstico por objeto/video y las mediciones repetidas se ejecutan con:
+
+```bash
+python scripts/workstation_round2.py
+```
+
+Los resultados quedan en la misma carpeta; los tiempos por imagen se conservan en la carpeta externa de ejecuciones.
+
 ## Instalación
 
 Use Python 3.11, 3.12 o 3.13. El entrenamiento admite GPU CUDA; la demostración incluye ejecución en CPU.
@@ -146,10 +166,10 @@ Los informes de esta evaluación complementaria se escriben en `results/<split>/
 ## Demostración
 
 ```bash
-python scripts/demo.py --image imagen.jpg --weights best.pt --experiment M2 --output deteccion.jpg --device cpu
+python scripts/demo.py --image imagen.jpg --weights best.pt --experiment M2 --gun-conf 0.40 --output deteccion.jpg --device cpu
 ```
 
-El programa dibuja cajas, clases y confianza sobre la imagen y guarda las detecciones en un archivo JSON junto a la imagen de salida.
+El programa dibuja cajas, clases y confianza sobre la imagen y guarda las detecciones y los umbrales en un archivo JSON junto a la imagen de salida. `--gun-conf` ajusta gun para la demostración; person conserva el umbral del experimento. La propuesta para M2 utiliza gun 0,40 y person 0,25, según el análisis de Validation.
 
 ## Presentación y publicación
 
@@ -177,7 +197,7 @@ El repositorio reúne código, configuraciones, resultados y presentación. La e
 |---|---|
 | Jose Gabriel Laymito Quispe | Preparación del dataset y desarrollo experimental; entrenamiento B1/M1/M2, análisis de errores y evaluación final. |
 | Dina Yesica Huamán Huallpa | Desarrollo inicial conjunto: preparación del dataset, notebook B1, entrenamiento del baseline, análisis de errores y preparación de M1. |
-| Jose Miguel Alvarado Moreno | Integración del repositorio, automatización del flujo experimental, pruebas funcionales y revisión de la documentación y la metodología. |
+| Jose Miguel Alvarado Moreno | Integración del repositorio y automatización; reevaluación B1/M1/M2 en RTX 4090, análisis de errores, umbrales y rendimiento, pruebas funcionales y documentación. |
 | Frank Huaman Cancho | |
 | Christopher Nuñez | |
 

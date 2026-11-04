@@ -1,0 +1,20 @@
+{
+  "experiment": "M2",
+  "split": "val",
+  "selection_rule": "max gun F1 within M2 among six thresholds",
+  "gun_confidence": 0.4,
+  "person_confidence": 0.25,
+  "gun_metrics": {
+    "precision": 0.8847583643122676,
+    "recall": 0.6685393258426966,
+    "f1": 0.7616
+  },
+  "gun_counts": {
+    "gt": 712,
+    "tp": 476,
+    "fp": 62,
+    "fn": 236
+  },
+  "nms_iou": 0.6,
+  "matching_iou": 0.5
+}

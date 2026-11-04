@@ -15,7 +15,10 @@ p.add_argument('--weights', required=True)
 p.add_argument('--output', required=True)
 p.add_argument('--experiment', choices=['B1','M1','M2'], default='B1')
 p.add_argument('--device', default='cpu')
+p.add_argument('--gun-conf', type=float, help='Confianza de gun; person conserva el umbral del experimento')
 a = p.parse_args()
+if a.gun_conf is not None and not 0 <= a.gun_conf <= 1:
+    p.error("--gun-conf debe estar entre 0 y 1")
 settings = paths()
 configure_cache(settings)
 verify_source(settings['yolo'])
@@ -30,10 +33,12 @@ im = cv2.imread(a.image)
 if im is None: raise ValueError('No se pudo leer la imagen')
 device = select_device(a.device)
 c = config(a.experiment)
-c['prediction_conf'] = c['operating_conf']
+gun_conf = a.gun_conf if a.gun_conf is not None else c['operating_conf']
+c['prediction_conf'] = min(gun_conf, c['operating_conf'])
 model = DetectMultiBackend(a.weights, device=device, fp16=False)
 verify_model_classes(model)
 detections, passes = predict_image(model, im, c, device, torch, letterbox, non_max_suppression, scale_boxes)
+detections = [d for d in detections if d['confidence'] >= (gun_conf if d['class_id'] == 1 else c['operating_conf'])]
 for d in detections:
     x1,y1,x2,y2 = map(round,d['box'])
     cv2.rectangle(im,(x1,y1),(x2,y2),(0,0,255),2)
@@ -41,5 +46,5 @@ for d in detections:
                 (x1,max(15,y1-5)),cv2.FONT_HERSHEY_SIMPLEX,.5,(0,0,255),1)
 out = Path(a.output); out.parent.mkdir(parents=True,exist_ok=True)
 if not cv2.imwrite(str(out),im): raise RuntimeError('No se pudo guardar la imagen')
-write_json(out.with_suffix('.json'), {'detections':detections,'passes':passes})
+write_json(out.with_suffix('.json'), {'experiment':a.experiment,'confidence_by_class':{'person':c['operating_conf'],'gun':gun_conf},'detections':detections,'passes':passes})
 print(out)

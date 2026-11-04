@@ -15,8 +15,8 @@
     },
     {
       "name": "Jose Miguel Alvarado Moreno",
-      "contributions": "Integración del repositorio, flujo experimental, pruebas funcionales y documentación.",
-      "planned": "Reproducción B1/M1/M2, análisis de pruebas, presentación y publicación del repositorio."
+      "contributions": "Integración y automatización del repositorio; reevaluación B1/M1/M2 en RTX 4090, revisión visual de errores, análisis de umbrales y rendimiento, pruebas y documentación.",
+      "planned": "Diagnóstico exhaustivo de errores, mediciones repetidas de inferencia, análisis de variabilidad y preparación de la presentación."
     },
     {
       "name": "Frank Huaman Cancho",
