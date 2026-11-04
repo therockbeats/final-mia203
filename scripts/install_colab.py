@@ -25,10 +25,10 @@ def main():
     requirements = Path(__file__).resolve().parents[1]/'requirements.txt'
     with tempfile.TemporaryDirectory() as folder:
         extra = Path(folder)/'colab.txt'
-        extra.write_text(supplemental_requirements(requirements.read_text()))
+        extra.write_text(supplemental_requirements(requirements.read_text(encoding='utf-8')), encoding='utf-8', newline='\n')
         subprocess.run([sys.executable, '-m', 'pip', 'install', '-r', str(extra)], check=True)
     probe = subprocess.check_output([sys.executable, '-c',
-        'import json,torch,torchvision;print(json.dumps([torch.__version__,torchvision.__version__,torch.version.cuda]))'], text=True)
+        'import json,torch,torchvision;print(json.dumps([torch.__version__,torchvision.__version__,torch.version.cuda]))'], text=True, encoding='utf-8', errors='replace')
     import json
     if tuple(json.loads(probe)) != before:
         raise RuntimeError('La instalación cambió PyTorch, torchvision o CUDA; revise las dependencias')

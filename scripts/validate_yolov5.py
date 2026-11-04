@@ -1,6 +1,7 @@
 """Reproduce validación y evaluación final con YOLOv5 v7.0."""
 import argparse
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -21,7 +22,7 @@ def main():
     from src.runtime import configure_cache
     settings, cfg = paths(), config(a.experiment)
     if a.split == 'test':
-        selected = json.loads((ROOT/'configs/final_selection.json').read_text())
+        selected = json.loads((ROOT/'configs/final_selection.json').read_text(encoding='utf-8'))
         if a.experiment != selected['experiment'] or a.seed != selected['seed']:
             raise ValueError('TEST corresponde al modelo y semilla seleccionados')
         if sha256(weight_path(settings, a.experiment, a.seed)) != selected['expected_weights_sha256']:
@@ -31,7 +32,7 @@ def main():
     data_yaml = settings['runs']/'dataset.yaml'
     data_yaml.parent.mkdir(parents=True, exist_ok=True)
     data_yaml.write_text('path: '+json.dumps(str(settings['dataset']))+
-        '\ntrain: images/train\nval: images/val\ntest: images/test\nnc: 2\nnames: [person, gun]\n')
+        '\ntrain: images/train\nval: images/val\ntest: images/test\nnc: 2\nnames: [person, gun]\n', encoding='utf-8', newline='\n')
     parent = settings['runs']/a.experiment/f'seed{a.seed}'/f'{a.split}_yolov5'
     destination = parent/'run'
     index = 1
@@ -45,9 +46,9 @@ def main():
         '--conf-thres', str(cfg['prediction_conf']), '--iou-thres', str(cfg['nms_iou']),
         '--task', a.split, '--device', a.device or cfg['device'],
         '--project', str(parent), '--name', destination.name, '--exist-ok']
-    with (destination/'validation.log').open('w') as log:
-        process = subprocess.Popen(command, cwd=settings['yolo'], stdout=subprocess.PIPE,
-                                   stderr=subprocess.STDOUT, text=True)
+    with (destination/'validation.log').open('w', encoding='utf-8') as log:
+        process = subprocess.Popen(command, cwd=settings['yolo'], env={**os.environ, 'PYTHONUTF8': '1'}, stdout=subprocess.PIPE,
+                                   stderr=subprocess.STDOUT, text=True, encoding='utf-8', errors='replace')
         for line in process.stdout:
             print(line, end='', flush=True)
             log.write(line)

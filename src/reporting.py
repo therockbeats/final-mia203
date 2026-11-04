@@ -16,18 +16,18 @@ def import_experiment(source, experiment='B1'):
     target = p['runs']/experiment/'seed0/run'
     if target.exists():
         raise FileExistsError(f'{experiment} ya existe en el destino')
-    with (run/'results.csv').open() as f:
+    with (run/'results.csv').open(encoding='utf-8') as f:
         rows = [{k.strip(): v.strip() for k, v in row.items()} for row in csv.DictReader(f)]
     if [int(r['epoch']) for r in rows] != list(range(100)):
         raise ValueError(f'{experiment} debe contener 100 épocas consecutivas')
     if not all((run/'weights'/w).is_file() for w in ['best.pt', 'last.pt']):
         raise ValueError('Faltan checkpoints')
     log_file = source/'results'/folder/f'{experiment}_training.log'
-    log = log_file.read_text(errors='replace')
+    log = log_file.read_text(errors='replace', encoding='utf-8')
     options = run/'opt.yaml'
     if options.exists():
         import yaml
-        actual = yaml.safe_load(options.read_text())
+        actual = yaml.safe_load(options.read_text(encoding='utf-8'))
         expected = {'imgsz': 1280 if experiment == 'M1' else 640, 'multi_scale': experiment == 'M2',
                     'batch_size': 16, 'epochs': 100, 'optimizer': 'SGD', 'seed': 0}
         if any(actual.get(k) != v for k, v in expected.items()):
@@ -91,7 +91,7 @@ def compare(split, experiments=('B1', 'M1', 'M2')):
     out.mkdir(parents=True, exist_ok=True)
     for row in rows:
         row.pop('dataset_sha256')
-    with (out/'comparison.csv').open('w', newline='') as f:
+    with (out/'comparison.csv').open('w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=list(rows[0])); writer.writeheader(); writer.writerows(rows)
     class_rows = []
     for name in experiments:
@@ -99,7 +99,7 @@ def compare(split, experiments=('B1', 'M1', 'M2')):
             m = read_json(file)
             for cls, values in m['per_class'].items():
                 class_rows.append({'experiment': name, 'seed': m['seed'], 'split': split, 'class': cls, **values})
-    with (out/'per_class.csv').open('w', newline='') as f:
+    with (out/'per_class.csv').open('w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=list(class_rows[0])); writer.writeheader(); writer.writerows(class_rows)
     grouped = []
     for name in experiments:
@@ -122,7 +122,7 @@ def compare(split, experiments=('B1', 'M1', 'M2')):
             return f"{v['mean']:.3f}" + (f" $\\pm$ {v['sd']:.3f}" if v['sd'] is not None else '')
         tex.append(f"{g['experiment']} & {g['n_seeds']} & {val('map50')} & {val('map50_95')} & {val('gun_recall')} " + r'\\')
     tex += [r'\hline', r'\end{tabular}']
-    (out/'comparison.tex').write_text('\n'.join(tex)+'\n')
+    (out/'comparison.tex').write_text('\n'.join(tex)+'\n', encoding='utf-8', newline='\n')
     return rows
 
 

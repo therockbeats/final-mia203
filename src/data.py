@@ -17,7 +17,7 @@ def images(root, split):
 def labels(root, split, stem):
     p = Path(root) / 'labels' / split / (stem + '.txt')
     out = []
-    for line in p.read_text().splitlines():
+    for line in p.read_text(encoding='utf-8').splitlines():
         if not line.strip():
             continue
         v = [float(x) for x in line.split()]

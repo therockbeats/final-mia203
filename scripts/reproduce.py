@@ -26,7 +26,7 @@ for seed in a.seeds:
         split = 'val' if a.phase=='validation' else 'test'
         from_config = root/'configs/paths.local.json'
         import json
-        runs = Path(json.loads(from_config.read_text())['runs'])
+        runs = Path(json.loads(from_config.read_text(encoding='utf-8'))['runs'])
         for name in a.experiments:
             pred = runs/name/f'seed{seed}'/f'{split}_predictions/full/predictions.json'
             if not pred.exists(): command('predict',name,'--split',split,'--seed',seed)

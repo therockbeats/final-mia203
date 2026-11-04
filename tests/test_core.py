@@ -46,6 +46,46 @@ EVALUACION DE LA HIPOTESIS M2'''
             self.assertAlmostEqual(sum(r['training_hours'] for r in times), 6.866)
             self.assertEqual(selected['best_epoch'], 98)
 
+    def test_prepare_uses_utf8_with_windows_default_and_can_resume(self):
+        import src.runtime as runtime
+        original = "# 诏: UTF-8 source\nimport torch\nx = torch.load('weights.pt')\n"
+        with self.assertRaises(UnicodeDecodeError):
+            original.encode('utf-8').decode('cp1252')
+        native_open = Path.open
+
+        def windows_open(path, mode='r', buffering=-1, encoding=None,
+                         errors=None, newline=None):
+            if 'b' not in mode and encoding is None:
+                encoding = 'cp1252'
+            return native_open(path, mode, buffering, encoding, errors, newline)
+
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            yolo = root/'yolo'
+            yolo.mkdir()
+            weights = root/'weights.pt'
+            weights.write_bytes(b'fixture')
+            for name in runtime.PATCH_FILES:
+                file = yolo/name
+                file.parent.mkdir(parents=True, exist_ok=True)
+                file.write_text(original, encoding='utf-8')
+
+            def git_output(command, **kwargs):
+                if 'rev-parse' in command:
+                    return runtime.YOLO_COMMIT+'\n'
+                return original.encode('utf-8')
+
+            with patch.object(Path, 'open', windows_open), \
+                 patch.object(runtime.subprocess, 'check_output', side_effect=git_output), \
+                 patch.object(runtime, 'INITIAL_WEIGHTS_SHA256', runtime.sha256(weights)):
+                first = runtime.prepare(yolo, weights)
+                second = runtime.prepare(yolo, weights)
+                self.assertEqual(first, second)
+                self.assertEqual(runtime.verify_source(yolo), first)
+            for name in runtime.PATCH_FILES:
+                self.assertIn('诏', (yolo/name).read_text(encoding='utf-8'))
+                self.assertNotIn(b'\r\n', (yolo/name).read_bytes())
+
     def test_multiscale_uses_integer_bounds(self):
         original = 'sz = random.randrange(imgsz * 0.5, imgsz * 1.5 + gs) // gs * gs\n'
         patched = patch_source(original, 'train.py')

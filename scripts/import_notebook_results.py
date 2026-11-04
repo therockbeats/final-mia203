@@ -26,12 +26,12 @@ def scalar(text, label):
 
 
 def export(notebook_file, b1_minutes=None, figures=False):
-    cells = list(outputs(json.loads(Path(notebook_file).read_text())))
+    cells = list(outputs(json.loads(Path(notebook_file).read_text(encoding='utf-8'))))
     analysis = next(t for _, t in cells if 'EPOCH SELECCIONADO POR FITNESS - M1' in t)
     formal = next(t for s, t in cells if 'CELDA 30' in s and '100 / 100' in t)
     errors = next(t for _, t in cells if 'COMPARACION DIAGNOSTICA B1 640 VS M1 1280' in t)
     chosen = section(analysis, 'EPOCH SELECCIONADO POR FITNESS - M1', 'ULTIMO EPOCH M1')
-    with (ROOT/'results/imported_B1/results.csv').open() as f:
+    with (ROOT/'results/imported_B1/results.csv').open(encoding='utf-8') as f:
         history = list(csv.DictReader(f))
     history = [{k.strip(): float(v) for k, v in row.items()} for row in history]
     best = max(history, key=lambda r: .1*r['metrics/mAP_0.5'] + .9*r['metrics/mAP_0.5:0.95'])
@@ -47,7 +47,7 @@ def export(notebook_file, b1_minutes=None, figures=False):
           'fitness': scalar(chosen, 'Fitness'), 'execution_minutes': float(minutes[1]) if minutes else None}
     out = ROOT/'results/b1_m1_validation'
     out.mkdir(parents=True, exist_ok=True)
-    with (out/'comparison.csv').open('w', newline='') as f:
+    with (out/'comparison.csv').open('w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=list(b1)); writer.writeheader(); writer.writerows([b1, m1])
     diagnostic = []
     blocks = section(errors, 'COMPARACION DIAGNOSTICA B1 640 VS M1 1280', 'EVALUACION DE LA HIPOTESIS M1')
@@ -62,19 +62,19 @@ def export(notebook_file, b1_minutes=None, figures=False):
             tp, fp, fn = [values[k][i] for k in ['TP', 'FP', 'FN']]
             diagnostic.append({'experiment': name, 'class': cls, 'tp': tp, 'fp': fp, 'fn': fn,
                                'precision': tp/(tp+fp), 'recall': tp/(tp+fn)})
-    with (out/'diagnostic.csv').open('w', newline='') as f:
+    with (out/'diagnostic.csv').open('w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=list(diagnostic[0])); writer.writeheader(); writer.writerows(diagnostic)
     model_dir = ROOT/'results/imported_M1'; model_dir.mkdir(parents=True, exist_ok=True)
     (model_dir/'summary.json').write_text(json.dumps({**m1, 'epochs': 100, 'seed': 0,
         'split': 'val', 'evaluator': 'YOLOv5 v7.0', 'source': Path(notebook_file).name,
-        'cells': [30, 31, 32]}, ensure_ascii=False, indent=2)+'\n')
+        'cells': [30, 31, 32]}, ensure_ascii=False, indent=2)+'\n', encoding='utf-8', newline='\n')
     tex = [r'\begin{tabular}{lrrr}', r'\toprule', r'Métrica & B1 & M1 & Cambio relativo \\', r'\midrule']
     for key, label in [('precision', 'Precision'), ('recall', 'Recall'), ('map50', 'mAP@0.5'),
                        ('map50_95', 'mAP@0.5:0.95'), ('fitness', 'Fitness')]:
         delta = 100*(m1[key]/b1[key]-1)
         tex.append(f'{label} & {b1[key]:.3f} & {m1[key]:.3f} & {delta:+.1f}'+r'\% \\')
     tex.extend([r'\bottomrule', r'\end{tabular}'])
-    (out/'comparison.tex').write_text('\n'.join(tex)+'\n')
+    (out/'comparison.tex').write_text('\n'.join(tex)+'\n', encoding='utf-8', newline='\n')
     if figures:
         import os
         import tempfile

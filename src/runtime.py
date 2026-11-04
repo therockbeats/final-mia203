@@ -54,19 +54,19 @@ def prepare(yolo, initial_weights):
     yolo = Path(yolo)
     if not yolo.exists():
         run(['git', 'clone', '--branch', 'v7.0', '--depth', '1', 'https://github.com/ultralytics/yolov5.git', yolo])
-    commit = subprocess.check_output(['git', '-C', str(yolo), 'rev-parse', 'HEAD'], text=True).strip()
+    commit = subprocess.check_output(['git', '-C', str(yolo), 'rev-parse', 'HEAD'], text=True, encoding='utf-8', errors='replace').strip()
     if commit != YOLO_COMMIT:
         raise ValueError('Commit YOLOv5 distinto del protocolo')
     manifest = {'commit': commit, 'files': {}}
     for name in PATCH_FILES:
-        original = subprocess.check_output(['git', '-C', str(yolo), 'show', f'HEAD:{name}']).decode()
+        original = subprocess.check_output(['git', '-C', str(yolo), 'show', f'HEAD:{name}']).decode('utf-8')
         patched = patch_source(original, name)
         p = yolo / name
         legacy = patched.replace('random.randrange(int(imgsz * 0.5), int(imgsz * 1.5 + gs))',
                                  'random.randrange(imgsz * 0.5, imgsz * 1.5 + gs)') if name == 'train.py' else patched
-        if p.read_text() not in (original, patched, legacy):
+        if p.read_text(encoding='utf-8') not in (original, patched, legacy):
             raise ValueError(f'Hay modificaciones ajenas al protocolo: {p}')
-        p.write_text(patched)
+        p.write_text(patched, encoding='utf-8', newline='\n')
         manifest['files'][name] = sha256(p)
     write_json(yolo / 'compatibility_manifest.json', manifest)
     initial_weights = Path(initial_weights)
@@ -89,7 +89,7 @@ def prepare(yolo, initial_weights):
 
 def verify_source(yolo):
     manifest = read_json(Path(yolo) / 'compatibility_manifest.json')
-    head = subprocess.check_output(['git', '-C', str(yolo), 'rev-parse', 'HEAD'], text=True).strip()
+    head = subprocess.check_output(['git', '-C', str(yolo), 'rev-parse', 'HEAD'], text=True, encoding='utf-8', errors='replace').strip()
     if head != YOLO_COMMIT:
         raise ValueError('Commit YOLOv5 cambiado')
     if manifest['commit'] != YOLO_COMMIT:

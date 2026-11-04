@@ -20,7 +20,7 @@ def train(name, seed, smoke=False, dry_run=False):
     data_yaml.parent.mkdir(parents=True, exist_ok=True)
     # JSON strings are valid YAML scalars and preserve spaces in paths.
     import json
-    data_yaml.write_text('path: ' + json.dumps(str(p['dataset'])) + '\ntrain: images/train\nval: images/val\ntest: images/test\nnc: 2\nnames: [person, gun]\n')
+    data_yaml.write_text('path: ' + json.dumps(str(p['dataset'])) + '\ntrain: images/train\nval: images/val\ntest: images/test\nnc: 2\nnames: [person, gun]\n', encoding='utf-8', newline='\n')
     command = [sys.executable, str(p['yolo']/'train.py'), '--data', str(data_yaml),
         '--weights', str(p['initial_weights']), '--imgsz', str(c['imgsz']), '--epochs', str(epochs),
         '--batch-size', str(c['batch_size']), '--workers', str(c['workers']), '--seed', str(seed),
@@ -31,7 +31,7 @@ def train(name, seed, smoke=False, dry_run=False):
     csv_path = destination / 'results.csv'
     completed = 0
     if csv_path.exists():
-        completed = len(list(csv.DictReader(csv_path.open())))
+        completed = len(list(csv.DictReader(csv_path.open(encoding='utf-8'))))
     if completed >= epochs and (destination/'weights/best.pt').exists():
         protocol = destination.parent / (destination.name + '.protocol.json')
         imported = destination.parent / 'imported.provenance.json'
@@ -66,9 +66,9 @@ def train(name, seed, smoke=False, dry_run=False):
     if smoke:
         train_list = p['runs']/'smoke_images.txt'
         from .data import images
-        train_list.write_text('\n'.join(str(x) for x in images(p['dataset'], 'train')[:64])+'\n')
+        train_list.write_text('\n'.join(str(x) for x in images(p['dataset'], 'train')[:64])+'\n', encoding='utf-8', newline='\n')
         smoke_yaml = p['runs']/'smoke.yaml'
-        smoke_yaml.write_text(data_yaml.read_text().replace('train: images/train', 'train: '+json.dumps(str(train_list))))
+        smoke_yaml.write_text(data_yaml.read_text(encoding='utf-8').replace('train: images/train', 'train: '+json.dumps(str(train_list))), encoding='utf-8', newline='\n')
         if '--data' in command:
             command[command.index('--data') + 1] = str(smoke_yaml)
     protocol_file = destination.parent / (destination.name + '.protocol.json')
@@ -78,9 +78,9 @@ def train(name, seed, smoke=False, dry_run=False):
             'environment': environment(), 'created_at': now()})
     log = destination.parent / (destination.name + '.console.log')
     start = time.perf_counter()
-    env = {**os.environ, 'WANDB_MODE': 'disabled', 'COMET_MODE': 'DISABLED', 'PYTHONHASHSEED': str(seed)}
-    with log.open('a') as f:
-        proc = subprocess.Popen(command, cwd=p['yolo'], env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
+    env = {**os.environ, 'WANDB_MODE': 'disabled', 'COMET_MODE': 'DISABLED', 'PYTHONHASHSEED': str(seed), 'PYTHONUTF8': '1'}
+    with log.open('a', encoding='utf-8') as f:
+        proc = subprocess.Popen(command, cwd=p['yolo'], env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1, encoding='utf-8', errors='replace')
         for line in proc.stdout:
             print(line, end='', flush=True)
             f.write(line); f.flush()

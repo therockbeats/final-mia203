@@ -15,12 +15,12 @@ from scripts.import_notebook_results import outputs
 
 def csv_file(path, rows):
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open('w', newline='') as f:
+    with path.open('w', newline='', encoding='utf-8') as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
 
 
 def read_results(path):
-    cells = list(outputs(json.loads(Path(path).read_text())))
+    cells = list(outputs(json.loads(Path(path).read_text(encoding='utf-8'))))
     consolidated = next(t for _, t in cells if 'EXPERIMENTOS SOBRE VALIDATION' in t and 'MODELO FINAL M2 SOBRE TEST' in t)
     validation = []
     for line in consolidated.splitlines():
@@ -77,25 +77,25 @@ def export(path, figures=False):
     for name, rows in [('validation_experiments', validation), ('final_test_metrics', testing),
                        ('diagnostic_validation', diagnostic), ('compute_cost', compute)]:
         csv_file(out/(name+'.csv'), rows)
-    (ROOT/'configs/final_selection.json').write_text(json.dumps(selection, ensure_ascii=False, indent=2)+'\n')
+    (ROOT/'configs/final_selection.json').write_text(json.dumps(selection, ensure_ascii=False, indent=2)+'\n', encoding='utf-8', newline='\n')
     summary = {'selected_experiment': 'M2', 'validation': validation, 'test': testing,
         'hard_gun': {'missed_by_b1_and_m1': 110, 'recovered_by_m2': 15, 'remaining': 95},
         'training_gpu_hours': round(sum(r['training_hours'] for r in compute), 3),
         'hardware': 'NVIDIA A100-SXM4-40GB', 'source': Path(path).name}
-    (out/'final_experiment_summary.json').write_text(json.dumps(summary, ensure_ascii=False, indent=2)+'\n')
+    (out/'final_experiment_summary.json').write_text(json.dumps(summary, ensure_ascii=False, indent=2)+'\n', encoding='utf-8', newline='\n')
     folder = ROOT/'results/imported_M2'; folder.mkdir(parents=True, exist_ok=True)
     m2 = next(r for r in validation if r['experiment']=='M2')
     (folder/'summary.json').write_text(json.dumps({**m2, 'epochs': 100, 'multi_scale': True,
         'seed': 0, 'training_hours': next(r['training_hours'] for r in compute if r['experiment']=='M2'),
-        'source': Path(path).name}, ensure_ascii=False, indent=2)+'\n')
+        'source': Path(path).name}, ensure_ascii=False, indent=2)+'\n', encoding='utf-8', newline='\n')
     tex = [r'\begin{tabular}{lrrrr}', r'\toprule', r'Experimento & P & R & mAP50 & mAP50:95 \\', r'\midrule']
     for row in validation:
         tex.append(f"{row['experiment']} & {row['precision']:.3f} & {row['recall']:.3f} & {row['map50']:.3f} & {row['map50_95']:.3f} "+r'\\')
-    (out/'validation.tex').write_text('\n'.join(tex+[r'\bottomrule', r'\end{tabular}'])+'\n')
+    (out/'validation.tex').write_text('\n'.join(tex+[r'\bottomrule', r'\end{tabular}'])+'\n', encoding='utf-8', newline='\n')
     tex = [r'\begin{tabular}{lrrrr}', r'\toprule', r'Clase & P & R & mAP50 & mAP50:95 \\', r'\midrule']
     for row in testing:
         tex.append(f"{row['class']} & {row['precision']:.3f} & {row['recall']:.3f} & {row['map50']:.3f} & {row['map50_95']:.3f} "+r'\\')
-    (out/'test.tex').write_text('\n'.join(tex+[r'\bottomrule', r'\end{tabular}'])+'\n')
+    (out/'test.tex').write_text('\n'.join(tex+[r'\bottomrule', r'\end{tabular}'])+'\n', encoding='utf-8', newline='\n')
     if figures:
         with tempfile.TemporaryDirectory() as cache:
             os.environ.setdefault('MPLCONFIGDIR', cache); os.environ.setdefault('XDG_CACHE_HOME', cache)
