@@ -1,0 +1,4 @@
+experiment,seed,confidence,gt,tp,fp,fn,fp_localizacion,fp_duplicado,fp_sin_solapamiento,fn_localizacion,fn_asignacion,fn_sin_candidato
+B1,0,0.25,712,497,96,215,66,4,26,105,0,110
+M1,0,0.25,712,355,94,357,55,19,20,86,0,271
+M2,0,0.25,712,498,104,214,75,10,19,121,0,93
