@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(root))
 p = argparse.ArgumentParser()
 p.add_argument('phase', choices=['train','validation','test','report'])
 p.add_argument('--seeds', type=int, nargs='+', default=[0])
