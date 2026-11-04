@@ -40,9 +40,9 @@ El grupo seleccionó M2 con validación y lo evaluó en las 508 imágenes de TES
 | person | 0,933 | 0,863 | 0,926 | 0,812 |
 | gun | 0,817 | 0,697 | 0,765 | 0,506 |
 
-`results/final_summary/` contiene las tablas y la figura de comparación extraídas del notebook actualizado. `configs/final_selection.json` identifica el modelo elegido. Las carpetas `imported_B1/` e `imported_M1/` conservan los historiales y curvas recibidos; `imported_M2/` contiene el resumen registrado en el notebook. La carpeta de ejecución y los pesos originales de M2 están pendientes de incorporación.
+`results/final_summary/` contiene las tablas de validación y TEST, contrastadas con los archivos originales del grupo, y sus figuras. `configs/final_selection.json` identifica el modelo elegido. Las carpetas `imported_B1/`, `imported_M1/` e `imported_M2/` conservan los historiales y curvas de las tres corridas completas. `results/final_test/` reúne las curvas y la matriz de confusión de M2 sobre TEST. Los checkpoints se almacenan en la carpeta externa de trabajo.
 
-Para regenerar las tablas y la figura:
+Para regenerar las tablas y la figura desde el notebook original del grupo:
 
 ```bash
 python scripts/import_final_results.py --notebook ../01_B1_YOLOv5s.ipynb --figures
@@ -145,7 +145,7 @@ El programa dibuja cajas, clases y confianza sobre la imagen y guarda las detecc
 
 ## Presentación y publicación
 
-`presentation/` contiene las 18 diapositivas Beamer y utiliza las tablas exportadas en `results/final_summary/`. La presentación se compila con:
+La presentación se prepara en `presentation/` utilizando las tablas de `results/final_summary/` y las figuras originales recibidas. Cuando se incorpore `presentation/slides.tex`, se compila con:
 
 ```bash
 bash scripts/build_documents.sh

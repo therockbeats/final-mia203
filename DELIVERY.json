@@ -7,7 +7,7 @@
   "contributors": [
     {
       "name": "Jose Gabriel Laymito Quispe",
-      "contributions": "Desarrollo inicial conjunto con Dina Yesica Huamán Huallpa: datos, B1, análisis y preparación de M1."
+      "contributions": "Preparación del dataset y desarrollo experimental con Dina; entrenamiento B1/M1/M2, análisis de errores y evaluación final."
     },
     {
       "name": "Dina Yesica Huamán Huallpa",
@@ -27,6 +27,6 @@
       "contributions": ""
     }
   ],
-  "status": "B1/M1/M2 entrenados; M2 seleccionado y evaluado en TEST",
+  "status": "B1/M1/M2 incorporados con historiales y pesos; M2 seleccionado y evaluado en TEST",
   "selected_experiment": "M2"
 }
