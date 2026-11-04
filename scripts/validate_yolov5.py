@@ -55,7 +55,12 @@ def main():
         code = process.wait()
     if code:
         raise RuntimeError(f'Validación terminada con código {code}: {destination}')
+    from src.exports import csv_file, parse_yolov5_log, export_yolov5, output_folder
+    rows = parse_yolov5_log((destination/'validation.log').read_text(encoding='utf-8'))
+    csv_file(destination/'metrics.csv', rows)
+    export_yolov5(settings['runs'], split=a.split, strict=False)
     print(destination)
+    print(f"Tablas CSV actualizadas en: {output_folder(settings['runs'])}")
 
 
 if __name__ == '__main__':

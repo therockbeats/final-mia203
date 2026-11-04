@@ -101,6 +101,14 @@ python scripts/validate_yolov5.py M2 --split test
 
 El programa comprueba que el checkpoint coincida con el seleccionado por el grupo y utiliza lote 16 para TEST.
 
+Cada validación guarda sus métricas en CSV y actualiza las tablas bajo `results/workstation/grupo/` (o `replicas/` para la carpeta de réplicas). Para reunir validaciones ya terminadas, ejecute:
+
+```bash
+python scripts/export_workstation.py
+```
+
+El comando lee los logs existentes y genera `validacion_yolov5.csv` y `validacion_yolov5_resumen.csv`. Después del análisis complementario, también exporta automáticamente umbrales, tiempo, memoria, ejemplos para revisión y `resumen_automatico.md`.
+
 ## Entrenamiento
 
 ```bash
@@ -133,7 +141,7 @@ python scripts/reproduce.py report --split val --seeds 0
 python scripts/reproduce.py report --split test --seeds 0 --experiments M2
 ```
 
-Los informes de esta evaluación complementaria se escriben en `results/<split>/`: `comparison.csv`, `per_class.csv`, `comparison_summary.json`, `comparison.tex` y figuras PNG/PDF.
+Los informes de esta evaluación complementaria se escriben en `results/<split>/`: `comparison.csv`, `per_class.csv`, `comparison_summary.json`, `comparison.tex` y figuras PNG/PDF. La fase de validación conserva además una copia publicable en `results/workstation/`, junto con las tablas automáticas de umbrales y rendimiento. Las observaciones manuales existentes en `revision_errores.csv` se conservan al regenerar los resultados.
 
 ## Demostración
 

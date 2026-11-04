@@ -36,3 +36,10 @@ if a.phase in ['validation','test','report']:
     command('figures','--split',split,'--experiments',*a.experiments)
     for seed in a.seeds:
         for name in a.experiments: command('errors',name,'--split',split,'--seed',seed)
+
+    if split == 'val':
+        from src.common import paths
+        from src.exports import export_workstation, output_folder
+        settings = paths()
+        export_workstation(settings, experiments=a.experiments, seeds=a.seeds)
+        print(f"Tablas, figuras y resumen guardados en: {output_folder(settings['runs'])}")
