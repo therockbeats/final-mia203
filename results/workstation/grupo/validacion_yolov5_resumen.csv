@@ -1,0 +1,10 @@
+experiment,class,split,n_seeds,precision_mean,precision_sd,recall_mean,recall_sd,map50_mean,map50_sd,map50_95_mean,map50_95_sd
+B1,all,val,1,0.931,,0.797,,0.852,,0.67,
+B1,gun,val,1,0.902,,0.674,,0.746,,0.518,
+B1,person,val,1,0.959,,0.92,,0.957,,0.822,
+M1,all,val,1,0.777,,0.763,,0.789,,0.524,
+M1,gun,val,1,0.742,,0.635,,0.672,,0.393,
+M1,person,val,1,0.813,,0.89,,0.907,,0.656,
+M2,all,val,1,0.91,,0.815,,0.861,,0.68,
+M2,gun,val,1,0.865,,0.698,,0.76,,0.529,
+M2,person,val,1,0.955,,0.931,,0.963,,0.831,

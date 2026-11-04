@@ -1,0 +1,4 @@
+experiment,seed,n_repetitions,mean_image_ms_mean,mean_image_ms_sd,fps_mean,fps_sd,peak_allocated_mib_mean,peak_allocated_mib_sd
+B1,0,1,8.974476721889983,,111.42710945595996,,69.7265625,
+M1,0,1,11.633901012592915,,85.95569095160491,,173.42822265625,
+M2,0,1,9.229767003600008,,108.34509685997023,,69.7265625,
