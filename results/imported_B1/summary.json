@@ -1,0 +1,45 @@
+{
+  "epochs": 100,
+  "seed": 0,
+  "training_config": {
+    "imgsz": 640,
+    "batch_size": 16,
+    "epochs": 100,
+    "optimizer": "SGD"
+  },
+  "hardware": "NVIDIA A100-SXM4-40GB",
+  "best_csv_epoch_zero_based": 84,
+  "experiment": "B1",
+  "split": "val",
+  "evaluator": "YOLOv5 v7.0 val.py",
+  "training_hours": 1.82,
+  "metrics": [
+    {
+      "class": "all",
+      "images": "494",
+      "instances": "1122",
+      "precision": "0.928",
+      "recall": "0.798",
+      "map50": "0.852",
+      "map50_95": "0.67"
+    },
+    {
+      "class": "person",
+      "images": "494",
+      "instances": "410",
+      "precision": "0.959",
+      "recall": "0.921",
+      "map50": "0.957",
+      "map50_95": "0.821"
+    },
+    {
+      "class": "gun",
+      "images": "494",
+      "instances": "712",
+      "precision": "0.896",
+      "recall": "0.676",
+      "map50": "0.746",
+      "map50_95": "0.518"
+    }
+  ]
+}

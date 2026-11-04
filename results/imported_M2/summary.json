@@ -1,0 +1,18 @@
+{
+  "experiment": "M2",
+  "configuration": "YOLOv5s / 640 / Multi-Scale",
+  "split": "val",
+  "best_epoch": 98,
+  "precision": 0.9128,
+  "recall": 0.8129,
+  "map50": 0.86192,
+  "map50_95": 0.68016,
+  "fitness": 0.698336,
+  "gun_tp_diagnostic": 590,
+  "gun_fn_diagnostic": 122,
+  "epochs": 100,
+  "multi_scale": true,
+  "seed": 0,
+  "training_hours": 1.837,
+  "source": "01_B1_YOLOv5s.ipynb"
+}

@@ -1,0 +1,4 @@
+experiment,configuration,split,best_epoch,precision,recall,map50,map50_95,fitness,gun_tp_diagnostic,gun_fn_diagnostic
+B1,YOLOv5s / 640,val,84,0.9284,0.79842,0.85159,0.66936,0.687583,580,132
+M1,YOLOv5s / 1280,val,99,0.77918,0.76408,0.79032,0.52402,0.55065,565,147
+M2,YOLOv5s / 640 / Multi-Scale,val,98,0.9128,0.8129,0.86192,0.68016,0.698336,590,122

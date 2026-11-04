@@ -1,0 +1,35 @@
+{
+  "classes": {
+    "0": "person",
+    "1": "gun"
+  },
+  "splits": {
+    "train": {
+      "images": 3997,
+      "labels": 3997,
+      "videos": 259,
+      "1": 6432,
+      "0": 3713,
+      "empty_labels": 1,
+      "without_gun": 41
+    },
+    "val": {
+      "images": 494,
+      "labels": 494,
+      "videos": 42,
+      "0": 410,
+      "1": 712,
+      "empty_labels": 0,
+      "without_gun": 3
+    },
+    "test": {
+      "images": 508,
+      "labels": 508,
+      "videos": 42,
+      "1": 888,
+      "empty_labels": 0,
+      "without_gun": 3,
+      "0": 400
+    }
+  }
+}

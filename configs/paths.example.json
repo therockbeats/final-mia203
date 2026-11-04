@@ -1,0 +1,7 @@
+{
+  "dataset": "/ruta/ExamenFinal_artefactos/data/processed",
+  "runs": "/ruta/ExamenFinal_artefactos/runs",
+  "yolo": "/ruta/ExamenFinal_artefactos/external/yolov5",
+  "initial_weights": "/ruta/ExamenFinal_artefactos/weights/yolov5s.pt",
+  "audit": "/ruta/ExamenFinal_artefactos/data/audit.json"
+}

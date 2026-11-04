@@ -1,0 +1,13 @@
+{
+  "experiment": "M2",
+  "model": "YOLOv5s",
+  "training": "multi-scale",
+  "imgsz": 640,
+  "seed": 0,
+  "best_epoch": 98,
+  "selection_split": "val",
+  "expected_weights_sha256": "084fbe295262885fc116ebc3a4dff110040ab2f95c56b211c570a1cae6f1a8fa",
+  "evaluation_split": "test",
+  "evaluator": "YOLOv5 v7.0",
+  "source": "01_B1_YOLOv5s.ipynb"
+}

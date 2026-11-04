@@ -1,0 +1,87 @@
+{
+  "selected_experiment": "M2",
+  "validation": [
+    {
+      "experiment": "B1",
+      "configuration": "YOLOv5s / 640",
+      "split": "val",
+      "best_epoch": 84,
+      "precision": 0.9284,
+      "recall": 0.79842,
+      "map50": 0.85159,
+      "map50_95": 0.66936,
+      "fitness": 0.687583,
+      "gun_tp_diagnostic": 580,
+      "gun_fn_diagnostic": 132
+    },
+    {
+      "experiment": "M1",
+      "configuration": "YOLOv5s / 1280",
+      "split": "val",
+      "best_epoch": 99,
+      "precision": 0.77918,
+      "recall": 0.76408,
+      "map50": 0.79032,
+      "map50_95": 0.52402,
+      "fitness": 0.55065,
+      "gun_tp_diagnostic": 565,
+      "gun_fn_diagnostic": 147
+    },
+    {
+      "experiment": "M2",
+      "configuration": "YOLOv5s / 640 / Multi-Scale",
+      "split": "val",
+      "best_epoch": 98,
+      "precision": 0.9128,
+      "recall": 0.8129,
+      "map50": 0.86192,
+      "map50_95": 0.68016,
+      "fitness": 0.698336,
+      "gun_tp_diagnostic": 590,
+      "gun_fn_diagnostic": 122
+    }
+  ],
+  "test": [
+    {
+      "experiment": "M2",
+      "split": "test",
+      "class": "all",
+      "images": 508,
+      "instances": 1288,
+      "precision": 0.875,
+      "recall": 0.78,
+      "map50": 0.845,
+      "map50_95": 0.659
+    },
+    {
+      "experiment": "M2",
+      "split": "test",
+      "class": "person",
+      "images": 508,
+      "instances": 400,
+      "precision": 0.933,
+      "recall": 0.863,
+      "map50": 0.926,
+      "map50_95": 0.812
+    },
+    {
+      "experiment": "M2",
+      "split": "test",
+      "class": "gun",
+      "images": 508,
+      "instances": 888,
+      "precision": 0.817,
+      "recall": 0.697,
+      "map50": 0.765,
+      "map50_95": 0.506
+    }
+  ],
+  "hard_gun": {
+    "missed_by_b1_and_m1": 110,
+    "recovered_by_m2": 15,
+    "remaining": 95
+  },
+  "training_gpu_hours": 6.866,
+  "hardware": "NVIDIA A100-SXM4-40GB",
+  "source": "01_B1_YOLOv5s.ipynb"
+}

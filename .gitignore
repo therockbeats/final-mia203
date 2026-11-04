@@ -1,0 +1,44 @@
+# Configuración propia y credenciales
+configs/paths.local.json
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+# Datos, modelos y ejecuciones completas
+data/*
+!data/README.md
+weights/*
+!weights/README.md
+artifacts/
+external/
+runs/
+*.pt
+*.pth
+*.ckpt
+*.zip
+*.tar
+*.gz
+*.npy
+*.npz
+# Entorno local
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+.vscode/
+.idea/
+# Compilación LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.nav
+*.snm
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.blg

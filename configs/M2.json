@@ -1,0 +1,16 @@
+{
+  "model": "YOLOv5s",
+  "epochs": 100,
+  "batch_size": 16,
+  "workers": 2,
+  "optimizer": "SGD",
+  "device": "0",
+  "imgsz": 640,
+  "inference": "full",
+  "prediction_conf": 0.001,
+  "operating_conf": 0.25,
+  "nms_iou": 0.6,
+  "max_det": 300,
+  "small_area_relative": 0.01,
+  "multi_scale": true
+}

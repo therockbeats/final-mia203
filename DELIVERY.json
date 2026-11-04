@@ -1,0 +1,32 @@
+{
+  "team": 4,
+  "repository_url": "https://github.com/therockbeats/final-mia203",
+  "dataset_url": "https://github.com/therockbeats/final-mia203/blob/main/data/README.md",
+  "weights_url": "https://github.com/therockbeats/final-mia203/blob/main/weights/README.md",
+  "tag": "v1.0-final",
+  "contributors": [
+    {
+      "name": "Jose Gabriel Laymito Quispe",
+      "contributions": "Desarrollo inicial conjunto con Dina Yesica Huamán Huallpa: datos, B1, análisis y preparación de M1."
+    },
+    {
+      "name": "Dina Yesica Huamán Huallpa",
+      "contributions": "Desarrollo inicial conjunto con Jose Gabriel Laymito Quispe: datos, B1, análisis y preparación de M1."
+    },
+    {
+      "name": "Jose Miguel Alvarado Moreno",
+      "contributions": "Integración del repositorio, flujo experimental, pruebas funcionales y documentación.",
+      "planned": "Reproducción B1/M1/M2, análisis de pruebas, presentación y publicación del repositorio."
+    },
+    {
+      "name": "Frank Huaman Cancho",
+      "contributions": ""
+    },
+    {
+      "name": "Christopher Nunez",
+      "contributions": ""
+    }
+  ],
+  "status": "B1/M1/M2 entrenados; M2 seleccionado y evaluado en TEST",
+  "selected_experiment": "M2"
+}

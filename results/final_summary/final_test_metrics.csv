@@ -1,0 +1,4 @@
+experiment,split,class,images,instances,precision,recall,map50,map50_95
+M2,test,all,508,1288,0.875,0.78,0.845,0.659
+M2,test,person,508,400,0.933,0.863,0.926,0.812
+M2,test,gun,508,888,0.817,0.697,0.765,0.506
