@@ -1,0 +1,7 @@
+experiment,seed,split,class,images,instances,precision,recall,map50,map50_95,evaluator
+B1,1,val,all,494,1122,0.933,0.802,0.863,0.688,YOLOv5 v7.0 val.py
+B1,1,val,person,494,410,0.975,0.922,0.964,0.836,YOLOv5 v7.0 val.py
+B1,1,val,gun,494,712,0.892,0.683,0.762,0.539,YOLOv5 v7.0 val.py
+M2,1,val,all,494,1122,0.921,0.8,0.862,0.676,YOLOv5 v7.0 val.py
+M2,1,val,person,494,410,0.945,0.912,0.962,0.827,YOLOv5 v7.0 val.py
+M2,1,val,gun,494,712,0.897,0.688,0.762,0.524,YOLOv5 v7.0 val.py

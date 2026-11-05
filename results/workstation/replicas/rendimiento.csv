@@ -1,0 +1,3 @@
+experiment,seed,repetition,images,imgsz,batch,precision,gpu,mean_image_ms,fps,peak_allocated_mib
+B1,1,1,494,640,1,FP32,NVIDIA GeForce RTX 4090,9.534547165170997,104.88175082429994,69.7265625
+M2,1,1,494,640,1,FP32,NVIDIA GeForce RTX 4090,9.27453643705051,107.82210052085581,69.7265625

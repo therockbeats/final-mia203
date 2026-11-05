@@ -1,0 +1,58 @@
+[
+  {
+    "experiment": "B1",
+    "n_seeds": 1,
+    "map50": {
+      "mean": 0.839136157289117,
+      "sd": null
+    },
+    "map50_95": {
+      "mean": 0.6583466248545351,
+      "sd": null
+    },
+    "gun_map50": {
+      "mean": 0.7261024309396966,
+      "sd": null
+    },
+    "gun_recall": {
+      "mean": 0.7064606741573034,
+      "sd": null
+    },
+    "small_gun_recall": {
+      "mean": 0.16541353383458646,
+      "sd": null
+    },
+    "mean_image_seconds": {
+      "mean": 0.009534547165170998,
+      "sd": null
+    }
+  },
+  {
+    "experiment": "M2",
+    "n_seeds": 1,
+    "map50": {
+      "mean": 0.8430553330996184,
+      "sd": null
+    },
+    "map50_95": {
+      "mean": 0.6463661786336709,
+      "sd": null
+    },
+    "gun_map50": {
+      "mean": 0.7358438564353916,
+      "sd": null
+    },
+    "gun_recall": {
+      "mean": 0.702247191011236,
+      "sd": null
+    },
+    "small_gun_recall": {
+      "mean": 0.17293233082706766,
+      "sd": null
+    },
+    "mean_image_seconds": {
+      "mean": 0.00927453643705051,
+      "sd": null
+    }
+  }
+]
