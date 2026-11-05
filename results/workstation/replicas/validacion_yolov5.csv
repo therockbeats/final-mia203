@@ -1,7 +1,19 @@
 experiment,seed,split,class,images,instances,precision,recall,map50,map50_95,evaluator
+B1,0,val,all,494,1122,0.914,0.815,0.856,0.678,YOLOv5 v7.0 val.py
+B1,0,val,person,494,410,0.965,0.929,0.965,0.831,YOLOv5 v7.0 val.py
+B1,0,val,gun,494,712,0.863,0.701,0.747,0.524,YOLOv5 v7.0 val.py
 B1,1,val,all,494,1122,0.933,0.802,0.863,0.688,YOLOv5 v7.0 val.py
 B1,1,val,person,494,410,0.975,0.922,0.964,0.836,YOLOv5 v7.0 val.py
 B1,1,val,gun,494,712,0.892,0.683,0.762,0.539,YOLOv5 v7.0 val.py
+B1,2,val,all,494,1122,0.908,0.806,0.853,0.68,YOLOv5 v7.0 val.py
+B1,2,val,person,494,410,0.962,0.929,0.964,0.842,YOLOv5 v7.0 val.py
+B1,2,val,gun,494,712,0.855,0.683,0.743,0.518,YOLOv5 v7.0 val.py
+M2,0,val,all,494,1122,0.927,0.809,0.861,0.671,YOLOv5 v7.0 val.py
+M2,0,val,person,494,410,0.966,0.922,0.96,0.827,YOLOv5 v7.0 val.py
+M2,0,val,gun,494,712,0.888,0.697,0.761,0.515,YOLOv5 v7.0 val.py
 M2,1,val,all,494,1122,0.921,0.8,0.862,0.676,YOLOv5 v7.0 val.py
 M2,1,val,person,494,410,0.945,0.912,0.962,0.827,YOLOv5 v7.0 val.py
 M2,1,val,gun,494,712,0.897,0.688,0.762,0.524,YOLOv5 v7.0 val.py
+M2,2,val,all,494,1122,0.916,0.795,0.853,0.669,YOLOv5 v7.0 val.py
+M2,2,val,person,494,410,0.957,0.918,0.959,0.819,YOLOv5 v7.0 val.py
+M2,2,val,gun,494,712,0.875,0.673,0.748,0.519,YOLOv5 v7.0 val.py

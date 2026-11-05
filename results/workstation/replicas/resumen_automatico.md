@@ -1,8 +1,8 @@
 # Resumen de evaluación en workstation
 
-Modelos y semillas: B1/seed1, M2/seed1.
+Modelos y semillas: B1/seed0, B1/seed1, B1/seed2, M2/seed0, M2/seed1, M2/seed2.
 
-Se exportaron 6 filas del validador YOLOv5. Las métricas complementarias se encuentran en comparison.csv y per_class.csv.
+Se exportaron 18 filas del validador YOLOv5. Las métricas complementarias se encuentran en comparison.csv y per_class.csv.
 
 ## Umbral de demostración
 
@@ -22,12 +22,24 @@ revision_errores.csv contiene los ejemplos seleccionados. Las columnas occlusion
 
 | Modelo | Semilla | Clase | P | R | mAP50 | mAP50:95 |
 |---|---:|---|---:|---:|---:|---:|
+| B1 | 0 | all | 0.914 | 0.815 | 0.856 | 0.678 |
+| B1 | 0 | person | 0.965 | 0.929 | 0.965 | 0.831 |
+| B1 | 0 | gun | 0.863 | 0.701 | 0.747 | 0.524 |
 | B1 | 1 | all | 0.933 | 0.802 | 0.863 | 0.688 |
 | B1 | 1 | person | 0.975 | 0.922 | 0.964 | 0.836 |
 | B1 | 1 | gun | 0.892 | 0.683 | 0.762 | 0.539 |
+| B1 | 2 | all | 0.908 | 0.806 | 0.853 | 0.680 |
+| B1 | 2 | person | 0.962 | 0.929 | 0.964 | 0.842 |
+| B1 | 2 | gun | 0.855 | 0.683 | 0.743 | 0.518 |
+| M2 | 0 | all | 0.927 | 0.809 | 0.861 | 0.671 |
+| M2 | 0 | person | 0.966 | 0.922 | 0.960 | 0.827 |
+| M2 | 0 | gun | 0.888 | 0.697 | 0.761 | 0.515 |
 | M2 | 1 | all | 0.921 | 0.800 | 0.862 | 0.676 |
 | M2 | 1 | person | 0.945 | 0.912 | 0.962 | 0.827 |
 | M2 | 1 | gun | 0.897 | 0.688 | 0.762 | 0.524 |
+| M2 | 2 | all | 0.916 | 0.795 | 0.853 | 0.669 |
+| M2 | 2 | person | 0.957 | 0.918 | 0.959 | 0.819 |
+| M2 | 2 | gun | 0.875 | 0.673 | 0.748 | 0.519 |
 
 ## Diagnóstico complementario de gun
 
@@ -35,5 +47,9 @@ P/R a confianza 0,25; armas pequeñas con área relativa ≤1 %.
 
 | Modelo | Semilla | TP | FP | FN | Recall pequeño | Objetos pequeños |
 |---|---:|---:|---:|---:|---:|---:|
+| B1 | 0 | 498 | 114 | 214 | 0.165 | 133 |
 | B1 | 1 | 503 | 97 | 209 | 0.165 | 133 |
+| B1 | 2 | 506 | 95 | 206 | 0.195 | 133 |
+| M2 | 0 | 495 | 117 | 217 | 0.143 | 133 |
 | M2 | 1 | 500 | 105 | 212 | 0.173 | 133 |
+| M2 | 2 | 512 | 116 | 200 | 0.211 | 133 |
