@@ -10,10 +10,10 @@ import re
 import shutil
 from .common import sha256, write_json, now
 
-"""----Formatos de imagen aceptados para el entrenamiento------"""
+# Formatos de imagen aceptados para el entrenamiento
 EXTENSIONS = {'.jpg', '.jpeg', '.png'}
 
-""" --- 1. CARGA DE IMÁGENES ---"""
+# 1. CARGA DE IMÁGENES 
 
 def images(root, split):
     return sorted(p for p in (Path(root) / 'images' / split).iterdir() if p.suffix.lower() in EXTENSIONS)
