@@ -13,18 +13,14 @@ from .common import sha256, write_json, now
 """----Formatos de imagen aceptados para el entrenamiento------"""
 EXTENSIONS = {'.jpg', '.jpeg', '.png'}
 
-# =====================================================================
-# 1. CARGA DE IMÁGENES
-# =====================================================================
+""" --- 1. CARGA DE IMÁGENES ---"""
 
 def images(root, split):
     return sorted(p for p in (Path(root) / 'images' / split).iterdir() if p.suffix.lower() in EXTENSIONS)
 
-# =====================================================================
-# 2. VALIDACIÓN ESTRICTA DE ETIQUETAS (YOLO FORMAT)
-# =====================================================================
 
- """ Lee y valida el archivo .txt de etiquetas correspondiente a una imagen.
+ """ 2. VALIDACIÓN ESTRICTA DE ETIQUETAS (YOLO FORMAT)
+    Lee y valida el archivo .txt de etiquetas correspondiente a una imagen.
     AQUÍ SE DEFINEN LOS PARÁMETROS GEOMÉTRICOS Y DE CLASE PARA EL ENTRENAMIENTO."""
 
 def labels(root, split, stem):
@@ -40,13 +36,13 @@ def labels(root, split, stem):
             raise ValueError(f'Etiqueta inválida: {p}')
         c, x, y, w, h = v
         
-        # PARÁMETRO 2: Clases permitidas. Solo 0 (person) y 1 (gun).
-        # PARÁMETRO 3: Coordenadas normalizadas (deben estar entre 0 y 1).
+        """--PARÁMETRO 2: Clases permitidas. Solo 0 (person) y 1 (gun).
+             PARÁMETRO 3: Coordenadas normalizadas (deben estar entre 0 y 1). -- """
         if c not in (0, 1) or not (0 <= x <= 1 and 0 <= y <= 1 and 0 < w <= 1 and 0 < h <= 1):
             raise ValueError(f'Clase/coordenadas inválidas: {p}')
 
-        # PARÁMETRO 4: Validación de bordes de la caja. 
-        # Se permite un margen de error mínimo (-0.002 a 1.002) por redondeo.
+        """--PARÁMETRO 4: Validación de bordes de la caja. -- """
+          Se permite un margen de error mínimo (-0.002 a 1.002) por redondeo.
         if x - w/2 < -0.002 or y - h/2 < -0.002 or x + w/2 > 1.002 or y + h/2 > 1.002:
             raise ValueError(f'Caja fuera de imagen: {p}')
         out.append([int(c), x, y, w, h])
@@ -76,9 +72,9 @@ def extract(archive, target):
             shutil.rmtree(tmp, ignore_errors=True)
             raise
 
-# =====================================================================
-# 4. AUDITORÍA DEL DATASET (PREVENCIÓN DE DATA LEAKAGE)
-# =====================================================================
+
+""" -- 4. AUDITORÍA DEL DATASET (PREVENCIÓN DE DATA LEAKAGE) ---"""
+
 def audit(root, output):
     root = Path(root)
     result = {'created_at': now(), 'splits': {}, 'overlap': {}, 'manifest': []}
@@ -92,18 +88,18 @@ def audit(root, output):
         videos[split], hashes[split], stems[split] = set(), set(), set(image_stems)
         counts = Counter()
 
-         # Formato esperado: "nombreVideo_0001_0002.jpg" -> Identifica el video "nombreVideo"
+        """ -- Formato esperado: "nombreVideo_0001_0002.jpg" -> Identifica el video "nombreVideo" --"""
         for p in ims:
             if not re.fullmatch(r'.+_\d+_\d+_\d+', p.stem):
                 raise ValueError(f'No se puede obtener el identificador de video: {p.name}')
             video = p.stem.rsplit('_', 3)[0]
             videos[split].add(video)
 
-            # Cuenta cuántas cajas hay de cada clase (person, gun)
+            """ -- Cuenta cuántas cajas hay de cada clase (person, gun) -- """
             boxes = labels(root, split, p.stem)
             counts.update(str(b[0]) for b in boxes)
 
-            # Cuenta imágenes sin cajas (negativos) y sin armas
+            """ -- Cuenta imágenes sin cajas (negativos) y sin armas --"""
             counts['empty_labels'] += not boxes
             counts['without_gun'] += not any(b[0] == 1 for b in boxes)
             digest = sha256(p)
@@ -136,7 +132,7 @@ def verify_manifest(root, audit_file):
             raise ValueError(f'Inventario de etiquetas cambiado: {split}')
 
 
-      # Verificación criptográfica de que cada imagen y etiqueta es exactamente igual a la auditada.
+      """ -- Verificación criptográfica de que cada imagen y etiqueta es exactamente igual a la auditada.--"""
     for row in result['manifest']:
         image = root/'images'/row['split']/row['image']
         label = root/'labels'/row['split']/(image.stem+'.txt')
