@@ -41,8 +41,8 @@ def labels(root, split, stem):
         if c not in (0, 1) or not (0 <= x <= 1 and 0 <= y <= 1 and 0 < w <= 1 and 0 < h <= 1):
             raise ValueError(f'Clase/coordenadas inválidas: {p}')
 
-        """--PARÁMETRO 4: Validación de bordes de la caja. -- """
-          Se permite un margen de error mínimo (-0.002 a 1.002) por redondeo.
+        """--PARÁMETRO 4: Validación de bordes de la caja.
+          Se permite un margen de error mínimo (-0.002 a 1.002) por redondeo. ---"""
         if x - w/2 < -0.002 or y - h/2 < -0.002 or x + w/2 > 1.002 or y + h/2 > 1.002:
             raise ValueError(f'Caja fuera de imagen: {p}')
         out.append([int(c), x, y, w, h])
