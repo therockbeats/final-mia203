@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 """Extracción de datos y comprobación de imágenes, etiquetas y particiones."""
 
 from collections import Counter
+=======
+# Extracción de datos y comprobación de imágenes, etiquetas y particiones.
+from collections import Counter, defaultdict
+>>>>>>> 929942ae2aa3bc6dda9d0928186d0cd4478c8ea5
 from pathlib import Path
 from zipfile import ZipFile
 import math
@@ -46,7 +51,12 @@ def labels(root, split, stem):
         out.append([int(c), x, y, w, h])
     return out
 
+<<<<<<< HEAD
 
+=======
+# Descomprime el dataset y aplica medidas de seguridad para evitar vulnerabilidades (Zip Slip).
+# Extrae en una carpeta temporal y luego la renombra para evitar datos corruptos.
+>>>>>>> 929942ae2aa3bc6dda9d0928186d0cd4478c8ea5
 def extract(archive, target):
     """Descomprime el dataset previniendo ataques Zip Slip."""
     target = Path(target).resolve()
@@ -131,8 +141,13 @@ def audit(root, output):
     if not result['valid']:
         raise ValueError('Fuga entre particiones: consultar auditoría')
     return result
+<<<<<<< HEAD
 
 
+=======
+    #  Comprueba que los datos no hayan sido alterados después de la auditoría.
+    #  Usa los hashes SHA256 guardados para garantizar reproducibilidad.
+>>>>>>> 929942ae2aa3bc6dda9d0928186d0cd4478c8ea5
 def verify_manifest(root, audit_file):
     """Verifica que los datos no hayan sido alterados."""
     from .common import read_json
@@ -153,6 +168,11 @@ def verify_manifest(root, audit_file):
         image = root / 'images' / row['split'] / row['image']
         label = root / 'labels' / row['split'] / (image.stem + '.txt')
         if sha256(image) != row['image_sha256'] or sha256(label) != row['label_sha256']:
+<<<<<<< HEAD
             raise ValueError(f'Datos cambiados: {image.name}')
             
     return result
+=======
+            raise ValueError(f'Datos cambiados después de auditar: {image.name}')
+    return result
+>>>>>>> 929942ae2aa3bc6dda9d0928186d0cd4478c8ea5
