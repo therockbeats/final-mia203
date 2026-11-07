@@ -7,6 +7,7 @@ import re
 import shutil
 from .common import sha256, write_json, now
 
+# Formatos de imagen aceptados para el entrenamiento
 EXTENSIONS = {'.jpg', '.jpeg', '.png'}
 
 
@@ -21,17 +22,26 @@ def labels(root, split, stem):
         if not line.strip():
             continue
         v = [float(x) for x in line.split()]
+
+        # PARÁMETRO 1: Formato de etiqueta. Debe tener 5 valores (clase, x, y, w, h)
         if len(v) != 5 or not all(math.isfinite(x) for x in v):
             raise ValueError(f'Etiqueta inválida: {p}')
         c, x, y, w, h = v
+
+        # PARÁMETRO 2: Clases permitidas. Solo 0 (person) y 1 (gun).
+        # PARÁMETRO 3: Coordenadas normalizadas (deben estar entre 0 y 1).
         if c not in (0, 1) or not (0 <= x <= 1 and 0 <= y <= 1 and 0 < w <= 1 and 0 < h <= 1):
             raise ValueError(f'Clase/coordenadas inválidas: {p}')
+
+        # PARÁMETRO 4: Validación de bordes de la caja. 
+        # Se permite un margen de error mínimo (-0.002 a 1.002) por redondeo.
         if x - w/2 < -0.002 or y - h/2 < -0.002 or x + w/2 > 1.002 or y + h/2 > 1.002:
             raise ValueError(f'Caja fuera de imagen: {p}')
         out.append([int(c), x, y, w, h])
     return out
 
-
+""" Descomprime el dataset y aplica medidas de seguridad para evitar vulnerabilidades (Zip Slip).
+    Extrae en una carpeta temporal y luego la renombra para evitar datos corruptos. """
 def extract(archive, target):
     target = Path(target).resolve()
     if target.exists():
@@ -68,23 +78,37 @@ def audit(root, output):
             raise ValueError(f'Correspondencia imagen/label inválida: {split}')
         videos[split], hashes[split], stems[split] = set(), set(), set(image_stems)
         counts = Counter()
+
+        # PARÁMETRO 5: Extracción del ID del video a partir del nombre del archivo.
+        # Formato esperado: "nombreVideo_0001_0002.jpg" -> Identifica el video "nombreVideo"
         for p in ims:
             if not re.fullmatch(r'.+_\d+_\d+_\d+', p.stem):
                 raise ValueError(f'No se puede obtener el identificador de video: {p.name}')
             video = p.stem.rsplit('_', 3)[0]
             videos[split].add(video)
+            
+            # Cuenta cuántas cajas hay de cada clase (person, gun)
             boxes = labels(root, split, p.stem)
             counts.update(str(b[0]) for b in boxes)
+            
+             # Cuenta imágenes sin cajas (negativos) y sin armas
             counts['empty_labels'] += not boxes
             counts['without_gun'] += not any(b[0] == 1 for b in boxes)
+            
+            # PARÁMETRO 6: Hashing de imágenes. Detecta si hay imágenes idénticas en distintos splits.
             digest = sha256(p)
             hashes[split].add(digest)
             result['manifest'].append({'split': split, 'image': p.name, 'video': video,
                 'image_sha256': digest, 'label_sha256': sha256(root / 'labels' / split / (p.stem + '.txt'))})
         result['splits'][split] = {'images': len(ims), 'labels': len(labs), 'videos': len(videos[split]), **counts}
+    
+    # PARÁMETRO CRÍTICO: Verificación de fuga de datos (Data Leakage) entre Train, Val y Test.
+    # Un video NO puede estar en dos particiones distintas.
     for a, b in [('train', 'val'), ('train', 'test'), ('val', 'test')]:
         overlap = {'videos': sorted(videos[a] & videos[b]), 'stems': sorted(stems[a] & stems[b]),
                    'identical_images': sorted(hashes[a] & hashes[b])}
+        
+        # Si hay cualquier tipo de solapamiento, el dataset es inválido.
         result['overlap'][a + ':' + b] = overlap
     result['valid'] = not any(any(v.values()) for v in result['overlap'].values())
     write_json(output, result)
@@ -92,7 +116,10 @@ def audit(root, output):
         raise ValueError('Fuga entre particiones: consultar auditoría')
     return result
 
-
+"""
+    Comprueba que los datos no hayan sido alterados después de la auditoría.
+    Usa los hashes SHA256 guardados para garantizar reproducibilidad.
+    """
 def verify_manifest(root, audit_file):
     from .common import read_json
     root = Path(root)
@@ -105,6 +132,8 @@ def verify_manifest(root, audit_file):
             raise ValueError(f'Inventario cambiado después de auditar: {split}')
         if {Path(n).stem for n in expected} != {p.stem for p in (root/'labels'/split).glob('*.txt')}:
             raise ValueError(f'Inventario de etiquetas cambiado: {split}')
+
+    # Verificación criptográfica de que cada imagen y etiqueta es exactamente igual a la auditada.    
     for row in result['manifest']:
         image = root/'images'/row['split']/row['image']
         label = root/'labels'/row['split']/(image.stem+'.txt')
