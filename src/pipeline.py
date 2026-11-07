@@ -1,16 +1,35 @@
 """Interfaz de línea de comandos del proyecto."""
+
+""" Este script centraliza todas las operaciones del flujo de trabajo experimental:
+configuración de rutas, extracción y auditoría de datos, entrenamiento, 
+evaluación, generación de figuras y congelamiento de protocolos para 
+asegurar la reproducibilidad.
+"""
 import argparse
 import sys
 from pathlib import Path
+
+""" Importación de utilidades locales (configuración, rutas, hashing, etc.)"""
+
 from .common import ROOT, paths, config, read_json, write_json, sha256, now
 
 
 def configure(args):
+     """
+    Configura las rutas locales del proyecto (dataset, pesos, YOLOv5).
+    Genera un archivo configs/paths.local.json para evitar hardcodear rutas.
+    """
+    
     base = Path(args.work_dir).expanduser().resolve()
+
+   """ Diccionario con las rutas absolutas requeridas por el pipeline"""
+
     value = {'dataset': str(base/'data/processed'), 'runs': str(base/'runs'),
         'yolo': str(base/'external/yolov5'), 'initial_weights': str(base/'weights/yolov5s.pt'),
         'audit': str(base/'data/audit.json')}
     dest = ROOT/'configs/paths.local.json'
+
+    """ Protección para no sobrescribir configuraciones existentes accidentalmente """
     if dest.exists():
         raise FileExistsError('La configuración local ya existe; editarla explícitamente')
     write_json(dest, value)
@@ -18,6 +37,15 @@ def configure(args):
 
 
 def freeze(args):
+
+    """
+    Congela el protocolo experimental antes de evaluar en Test.
+    
+    Esta función es crucial para evitar la fuga de datos (data leakage). 
+    Verifica que las predicciones de validación (usadas para elegir el modelo)
+    coincidan con las firmas SHA256 actuales. Una vez congelado, el modelo 
+    no puede ser reajustado con el conjunto de prueba.
+    """ 
     from .inference import signature
     p = paths()
     dest = ROOT/'configs/frozen_protocol.json'
@@ -39,18 +67,31 @@ def freeze(args):
 def main():
     parser = argparse.ArgumentParser(description='Proyecto final MIA-203 — Grupo 4')
     sub = parser.add_subparsers(dest='command', required=True)
+
+    """1. Configuración y preparación de datos """
     a = sub.add_parser('configure'); a.add_argument('--work-dir', required=True)
     a = sub.add_parser('extract'); a.add_argument('--zip', required=True)
     sub.add_parser('audit'); sub.add_parser('prepare'); sub.add_parser('doctor')
+
+    """2. Importación de experimentos previos (B1, M1, M2) """
     for name in ['import-b1', 'import-m1', 'import-m2']:
         a = sub.add_parser(name); a.add_argument('--source', required=True)
+
+    """3. Entrenamiento del modelo """
     a = sub.add_parser('train'); a.add_argument('experiment', choices=['B1','M1','M2']); a.add_argument('--seed', type=int, default=0)
     a.add_argument('--smoke', action='store_true'); a.add_argument('--dry-run', action='store_true')
+
+    """4. Inferencia y Evaluación """
     a = sub.add_parser('predict'); a.add_argument('experiment', choices=['B1','M1','M2'])
     a.add_argument('--split', choices=['val','test'], default='val'); a.add_argument('--seed', type=int, default=0); a.add_argument('--limit', type=int, default=0)
     a = sub.add_parser('evaluate'); a.add_argument('experiment', choices=['B1','M1','M2'])
     a.add_argument('--split', choices=['val','test'], default='val'); a.add_argument('--seed', type=int, default=0)
+
+
+    """5. Congelamiento de selección (Validation -> Test) """
     a = sub.add_parser('freeze'); a.add_argument('--seeds', nargs='+', type=int, default=[0]); a.add_argument('--rationale', default=''); a.add_argument('--experiments', nargs='+', choices=['B1','M1','M2'], default=['M2'])
+    
+    """6. Reportes y Figuras """
     for cmd in ['compare','figures']:
         a = sub.add_parser(cmd); a.add_argument('--split', choices=['val','test'], default='val'); a.add_argument('--experiments', nargs='+', choices=['B1','M1','M2'], default=['B1','M1','M2'])
     a = sub.add_parser('errors'); a.add_argument('experiment', choices=['B1','M1','M2'])

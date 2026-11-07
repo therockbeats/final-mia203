@@ -170,6 +170,7 @@ python scripts/demo.py --image imagen.jpg --weights best.pt --experiment M2 --gu
 ```
 
 El programa dibuja cajas, clases y confianza sobre la imagen y guarda las detecciones y los umbrales en un archivo JSON junto a la imagen de salida. `--gun-conf` ajusta gun para la demostración; person conserva el umbral del experimento. La propuesta para M2 utiliza gun 0,40 y person 0,25, según el análisis de Validation.
+Partimos de B1 con buen desempeño global, pero identificamos que la principal debilidad estaba en gun, especialmente en objetos pequeños, periféricos y escenas densas. Probamos aumentar la resolución con M1 a 1280×1280, pero el resultado empeoró: recuperó 22 armas que B1 fallaba, pero perdió 37 que B1 detectaba. Reformulamos entonces la hipótesis y entrenamos M2 con Multi-Scale. M2 elevó el fitness de 0.687583 a 0.698336, aumentó los TP de gun de 580 a 590 y redujo los FN de 132 a 122. Después comprobamos su generalización en un Test independiente de 508 imágenes. Finalmente, al llevarlo a CCTV descubrimos que la inferencia frame a frame no era suficiente, por lo que incorporamos contexto temporal y seleccionamos V3 por su mejor equilibrio entre sensibilidad, memoria ante oclusión y costo computacional.
 
 ## Presentación y publicación
 
@@ -198,7 +199,7 @@ El repositorio reúne código, configuraciones, resultados y presentación. La e
 | Jose Gabriel Laymito Quispe | Preparación del dataset y desarrollo experimental; entrenamiento B1/M1/M2, análisis de errores y evaluación final. |
 | Dina Yesica Huamán Huallpa | Desarrollo inicial conjunto: preparación del dataset, notebook B1, entrenamiento del baseline, análisis de errores y preparación de M1. |
 | Jose Miguel Alvarado Moreno | Integración del repositorio y automatización; reevaluación B1/M1/M2 en RTX 4090, análisis de errores, umbrales y rendimiento, pruebas funcionales y documentación. |
-| Frank Huaman Cancho | |
+| Frank Huaman Cancho | Revisión, documentación, mejora de informe, revisión de código python y de la estructura del pipeline |
 | Christopher Nuñez | |
 
 ## Alcance y fuentes
