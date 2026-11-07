@@ -2,7 +2,7 @@
 
 MIA-203 · Redes Neuronales y Aprendizaje Profundo · UNI · Grupo 4
 
-El proyecto compara tres configuraciones de YOLOv5s para detectar personas y armas en YouTube-GDD: una referencia a 640, entrenamiento a 1280 y entrenamiento multiescala. Los experimentos comparten las particiones, la inicialización COCO, el lote, el optimizador y la semilla.
+El proyecto compara tres configuraciones de YOLOv5s para detectar personas y armas en YouTube-GDD: una referencia a 640, entrenamiento a 1280 y entrenamiento multiescala. Los experimentos comparten las particiones, la inicialización COCO, el lote, el optimizador y la semilla. Para medir la variabilidad entre entrenamientos, B1 y M2 se repitieron además con las semillas 0, 1 y 2 en una RTX 4090.
 
 ## Experimentos
 
@@ -16,9 +16,13 @@ Los tres modelos parten del mismo checkpoint COCO. M1 utiliza 1280 durante entre
 
 YOLOv5 ajusta el peso de presencia de objeto con el factor `(imgsz/640)^2`. El repositorio incluye la adaptación de `random.randrange` para el entrenamiento multiescala con Python moderno.
 
+### Recorrido experimental
+
+B1 tuvo buen desempeño global, pero sus errores se concentraron en armas pequeñas, periféricas y en escenas con varias armas. M1 (1280) no mejoró: recuperó 22 armas que B1 omitía, perdió 37 que B1 detectaba y aumentó el tiempo de entrenamiento en 76 %. M2 (multiescala) obtuvo el mejor fitness de validación en la corrida única del grupo y fue el modelo seleccionado y evaluado en TEST. Las réplicas con tres semillas no confirman una ventaja de M2 sobre B1 (ver [Variabilidad entre semillas](#variabilidad-entre-semillas)). El prototipo de video con motor temporal (Streamlit, versiones V3 a V5) que describe el artículo se desarrolló fuera de este repositorio.
+
 ## Resultados disponibles
 
-Los tres entrenamientos completaron 100 épocas en A100 de 40 GB. Las métricas del checkpoint seleccionado de cada experimento en validación son:
+Los tres entrenamientos del grupo (semilla 0) completaron 100 épocas en A100 de 40 GB. Las métricas del checkpoint seleccionado de cada experimento en validación son:
 
 | Métrica global | B1 | M1 | M2 · multiescala |
 |---|---:|---:|---:|
@@ -30,7 +34,7 @@ Los tres entrenamientos completaron 100 épocas en A100 de 40 GB. Las métricas 
 | Fitness | 0,688 | 0,551 | 0,698 |
 | Horas de entrenamiento principal | 1,82 | 3,21 | 1,84 |
 
-M2 aumentó mAP@0.5:0.95 en 1,08 puntos porcentuales frente a B1. En el diagnóstico de gun a confianza 0,001, NMS IoU 0,60 y matching IoU 0,50, las omisiones pasaron de 132 a 122; los falsos positivos pasaron de 3.232 a 3.978. M2 recuperó 15 de las 110 armas que B1 y M1 omitían conjuntamente.
+En esta corrida única, M2 superó a B1 en 1,08 puntos porcentuales de mAP@0.5:0.95. En el diagnóstico de gun a confianza 0,001, NMS IoU 0,60 y matching IoU 0,50, las omisiones pasaron de 132 a 122; los falsos positivos pasaron de 3.232 a 3.978. M2 recuperó 15 de las 110 armas que B1 y M1 omitían conjuntamente. Al umbral operativo 0,25, en cambio, las omisiones de gun son prácticamente iguales (215 en B1 y 214 en M2). Las réplicas con más semillas muestran que la diferencia entre B1 y M2 está dentro de la variación entre corridas; la caída de M1 sí es muy superior a esa variación.
 
 El grupo seleccionó M2 con validación y lo evaluó en las 508 imágenes de TEST:
 
@@ -42,11 +46,53 @@ El grupo seleccionó M2 con validación y lo evaluó en las 508 imágenes de TES
 
 `results/final_summary/` contiene las tablas de validación y TEST, contrastadas con los archivos originales del grupo, y sus figuras. `configs/final_selection.json` identifica el modelo elegido. Las carpetas `imported_B1/`, `imported_M1/` e `imported_M2/` conservan los historiales y curvas de las tres corridas completas. `results/final_test/` reúne las curvas y la matriz de confusión de M2 sobre TEST. Los checkpoints se almacenan en la carpeta externa de trabajo.
 
-Para regenerar las tablas y la figura desde el notebook original del grupo:
+Para regenerar estas tablas y la figura desde el notebook original del grupo:
 
 ```bash
 python scripts/import_final_results.py --notebook ../01_B1_YOLOv5s.ipynb --figures
 ```
+
+## Variabilidad entre semillas
+
+La comparación anterior usa una sola semilla. Para estimar cuánto cambia el resultado entre entrenamientos, B1 y M2 se repitieron con las semillas 0, 1 y 2 en una RTX 4090, con el mismo protocolo (100 épocas, lote 16, SGD, hiperparámetros por defecto de YOLOv5 v7.0). Junto con la corrida original del grupo, cada configuración suma cuatro entrenamientos. Todas las cifras provienen de la reevaluación en la workstation: mAP con `val.py`; omisiones de gun y recall de armas pequeñas con el evaluador complementario a confianza 0,25.
+
+| Métrica (Validation) | B1, media ± DE | M2, media ± DE | M2 − B1 | p (permutación) |
+|---|---:|---:|---:|---:|
+| mAP@0.5 | 0,856 ± 0,005 | 0,859 ± 0,004 | +0,003 | 0,46 |
+| mAP@0.5:0.95 | 0,679 ± 0,007 | 0,674 ± 0,005 | −0,005 | 0,31 |
+| gun mAP@0.5:0.95 | 0,525 ± 0,010 | 0,522 ± 0,006 | −0,003 | 0,71 |
+| Omisiones de gun (conf 0,25) | 211,0 ± 4,2 | 210,8 ± 7,5 | −0,2 | 1,00 |
+| Recall de armas pequeñas | 0,167 ± 0,022 | 0,180 ± 0,029 | +0,013 | 0,51 |
+
+Con cuatro entrenamientos por configuración no hay una diferencia medible entre B1 y M2. Las cuatro corridas de B1 van de 0,670 a 0,688 en mAP@0.5:0.95, un rango mayor que la ventaja de 0,011 observada con una sola semilla. Con la misma semilla 0, cambiar de A100 a RTX 4090 movió B1 de 0,670 a 0,678 y M2 de 0,680 a 0,671: fijar la semilla no reproduce el mismo resultado en otro hardware. El valor p proviene de una prueba de permutación exacta y bilateral sobre las 70 formas de repartir las ocho corridas; con 4 + 4 corridas, el menor p posible es 0,029.
+
+M2 sigue siendo el modelo evaluado en TEST, porque se seleccionó y congeló con validación antes de abrir TEST. Las réplicas se ejecutaron después, solo sobre Validation, y no modificaron esa selección.
+
+Para regenerar la tabla, el valor p y las horas de entrenamiento de las réplicas:
+
+```bash
+python scripts/seed_summary.py
+```
+
+El programa lee `results/workstation/grupo/` y `results/workstation/replicas/` y escribe en `results/workstation/semillas/`: `semillas_corridas.csv` (una fila por entrenamiento), `semillas_resumen.csv` (medias, desviaciones, diferencia y p), `semillas.tex` (tabla del artículo) y `costo_replicas.csv`. Los historiales de entrenamiento de las réplicas están en `results/workstation/replicas/training/`.
+
+Las réplicas se entrenan y validan con una carpeta de ejecuciones propia: en `configs/paths.local.json`, `runs` debe apuntar a una carpeta llamada `runs_replicas_windows`, nombre que dirige las tablas a `results/workstation/replicas/`. Con esa configuración:
+
+```bash
+python scripts/reproduce.py train --seeds 0 1 2 --experiments B1 M2
+for exp in B1 M2; do for seed in 0 1 2; do python scripts/validate_yolov5.py $exp --seed $seed; done; done
+python scripts/reproduce.py validation --seeds 0 1 2 --experiments B1 M2
+```
+
+## Costo computacional
+
+| Entrenamientos | GPU | Horas |
+|---|---|---:|
+| B1, M1 y M2 del grupo (semilla 0) | NVIDIA A100-SXM4-40GB | 6,87 |
+| Réplicas de B1 y M2 (semillas 0, 1 y 2) | NVIDIA GeForce RTX 4090 | 8,02 |
+| Total | | 14,89 |
+
+Las horas del grupo provienen de `results/final_summary/compute_cost.csv`; las de las réplicas, de `results/workstation/semillas/costo_replicas.csv`. No incluyen las validaciones ni las pruebas de inferencia.
 
 ## Reevaluación en Corrida Local
 
@@ -152,7 +198,7 @@ python scripts/reproduce.py test --seeds 0 --experiments M2
 
 La validación compara B1, M1 y M2; la fase final utiliza M2. Para varias semillas, añada por ejemplo `--seeds 0 1 2` a los comandos correspondientes.
 
-El evaluador del repositorio calcula AP interpolada en 101 puntos y promedia los umbrales IoU de 0,50 a 0,95. Precision, Recall y F1 utilizan confianza operativa 0,25; AP utiliza predicciones desde 0,001. Las tablas comparativas aplican este evaluador a todos los experimentos. Las cifras de la comparación inicial corresponden a `val.py` de YOLOv5, que utiliza su propio cálculo de AP y selección del punto operativo.
+El evaluador del repositorio calcula AP interpolada en 101 puntos y promedia los umbrales IoU de 0,50 a 0,95. Precision, Recall y F1 utilizan confianza operativa 0,25; AP utiliza predicciones desde 0,001. Las tablas comparativas aplican este evaluador a todos los experimentos. Las cifras de la comparación inicial corresponden a `val.py` de YOLOv5, que utiliza su propio cálculo de AP y selección del punto operativo. Por eso los valores absolutos de ambos evaluadores no se mezclan en una misma tabla: en las réplicas de B1, mAP@0.5:0.95 es 0,682 con `val.py` y 0,649 con el evaluador complementario. Las comparaciones entre experimentos se hacen siempre con el mismo evaluador.
 
 El análisis por tamaño define un arma pequeña como una caja cuya área ocupa hasta el 1 % de la imagen original. Los informes incluyen su recall, AP por clase, curvas PR, ejemplos de errores, latencia por imagen y memoria asignada por PyTorch. La selección visual reúne las seis armas omitidas de menor área y los seis falsos positivos de mayor confianza.
 
@@ -170,7 +216,6 @@ python scripts/demo.py --image imagen.jpg --weights best.pt --experiment M2 --gu
 ```
 
 El programa dibuja cajas, clases y confianza sobre la imagen y guarda las detecciones y los umbrales en un archivo JSON junto a la imagen de salida. `--gun-conf` ajusta gun para la demostración; person conserva el umbral del experimento. La propuesta para M2 utiliza gun 0,40 y person 0,25, según el análisis de Validation.
-Partimos de B1 con buen desempeño global, pero identificamos que la principal debilidad estaba en gun, especialmente en objetos pequeños, periféricos y escenas densas. Probamos aumentar la resolución con M1 a 1280×1280, pero el resultado empeoró: recuperó 22 armas que B1 fallaba, pero perdió 37 que B1 detectaba. Reformulamos entonces la hipótesis y entrenamos M2 con Multi-Scale. M2 elevó el fitness de 0.687583 a 0.698336, aumentó los TP de gun de 580 a 590 y redujo los FN de 132 a 122. Después comprobamos su generalización en un Test independiente de 508 imágenes. Finalmente, al llevarlo a CCTV descubrimos que la inferencia frame a frame no era suficiente, por lo que incorporamos contexto temporal y seleccionamos V3 por su mejor equilibrio entre sensibilidad, memoria ante oclusión y costo computacional.
 
 ## Presentación y publicación
 
@@ -196,11 +241,11 @@ El repositorio reúne código, configuraciones, resultados y presentación. La e
 
 | Integrante | Tareas en las que participó |
 |---|---|
-| Jose Gabriel Laymito Quispe | Preparación del dataset y desarrollo experimental; entrenamiento B1/M1/M2, análisis de errores y evaluación final. |
-| Dina Yesica Huamán Huallpa | Desarrollo inicial conjunto: preparación del dataset, notebook B1, entrenamiento del baseline, análisis de errores y preparación de M1. |
-| Jose Miguel Alvarado Moreno | Integración del repositorio y automatización; reevaluación B1/M1/M2 en RTX 4090, análisis de errores, umbrales y rendimiento, pruebas funcionales y documentación. |
-| Frank Huaman Cancho | Revisión, documentación, mejora de informe, revisión de código python y de la estructura del pipeline |
-| Christopher Nuñez | |
+| Jose Gabriel Laymito Quispe | Planteamiento e implementación del notebook experimental; preparación del dataset; entrenamiento de B1, M1 y M2; análisis de errores y evaluación final en TEST. |
+| Dina Yesica Huamán Huallpa | Planteamiento del problema; preparación del dataset, notebook y entrenamiento de B1 junto con Jose Gabriel Laymito Quispe; análisis de errores y preparación de M1; documentación del código; redacción del artículo y diapositivas. |
+| Jose Miguel Alvarado Moreno | Integración del repositorio y automatización del flujo (auditoría de datos, entrenamiento, validación y exportación); reevaluación de B1, M1 y M2 en RTX 4090; réplicas de B1 y M2 con tres semillas y análisis de variabilidad; análisis de errores, umbrales y rendimiento; pruebas y documentación. |
+| Frank Huaman Cancho | Interpretación de resultados; revisión y mejora del artículo; revisión del código Python y de la estructura del pipeline; diapositivas. |
+| Christopher Nuñez |  |
 
 ## Alcance y fuentes
 

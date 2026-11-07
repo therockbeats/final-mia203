@@ -7,26 +7,25 @@
   "contributors": [
     {
       "name": "Jose Gabriel Laymito Quispe",
-      "contributions": "Preparación del dataset y desarrollo experimental con Dina; entrenamiento B1/M1/M2, análisis de errores y evaluación final."
+      "contributions": "Planteamiento e implementación del notebook experimental; preparación del dataset; entrenamiento de B1, M1 y M2; análisis de errores y evaluación final en TEST."
     },
     {
       "name": "Dina Yesica Huamán Huallpa",
-      "contributions": "Desarrollo inicial conjunto con Jose Gabriel Laymito Quispe: datos, B1, análisis y preparación de M1."
+      "contributions": "Planteamiento del problema; preparación del dataset, notebook y entrenamiento de B1 junto con Jose Gabriel Laymito Quispe; análisis de errores y preparación de M1; documentación del código; redacción del artículo y diapositivas."
     },
     {
       "name": "Jose Miguel Alvarado Moreno",
-      "contributions": "Integración y automatización del repositorio; reevaluación B1/M1/M2 en RTX 4090, revisión visual de errores, análisis de umbrales y rendimiento, pruebas y documentación.",
-      "planned": "Diagnóstico exhaustivo de errores, mediciones repetidas de inferencia, análisis de variabilidad y preparación de la presentación."
+      "contributions": "Integración del repositorio y automatización del flujo (auditoría de datos, entrenamiento, validación y exportación); reevaluación de B1, M1 y M2 en RTX 4090; réplicas de B1 y M2 con tres semillas y análisis de variabilidad; análisis de errores, umbrales y rendimiento; pruebas y documentación."
     },
     {
       "name": "Frank Huaman Cancho",
-      "contributions": ""
+      "contributions": "Interpretación de resultados; revisión y mejora del artículo; revisión del código Python y de la estructura del pipeline; diapositivas."
     },
     {
-      "name": "Christopher Nunez",
-      "contributions": ""
+      "name": "Christopher Nuñez",
+      "contributions": "Entrenamiento, redacción del artículo y diapositivas."
     }
   ],
-  "status": "B1/M1/M2 incorporados con historiales y pesos; M2 seleccionado y evaluado en TEST",
+  "status": "B1/M1/M2 incorporados con historiales y pesos; M2 seleccionado y evaluado en TEST; B1 y M2 replicados con semillas 0, 1 y 2 (results/workstation/semillas/)",
   "selected_experiment": "M2"
 }

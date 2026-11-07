@@ -1,0 +1,7 @@
+run,gpu,training_hours
+B1_seed0,RTX 4090,1.269
+B1_seed1,RTX 4090,1.284
+B1_seed2,RTX 4090,1.279
+M2_seed0,RTX 4090,1.281
+M2_seed1,RTX 4090,1.285
+M2_seed2,RTX 4090,1.618
