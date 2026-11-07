@@ -4,7 +4,8 @@ Une la corrida original del grupo (semilla 0, A100) con las réplicas de la
 workstation (semillas 0, 1 y 2, RTX 4090). Todas las cifras provienen de la
 reevaluación en la workstation: mAP con val.py de YOLOv5 v7.0; FN de gun y recall
 de armas pequeñas con el evaluador complementario a confianza 0,25.
-No entrena ni infiere: solo lee las tablas de results/workstation/.
+No entrena ni infiere: solo lee las tablas de results/workstation/ y genera la
+tabla y la figura de semillas del artículo.
 """
 from pathlib import Path
 from itertools import combinations
@@ -102,9 +103,48 @@ def latex_table(runs, summary):
     return '\n'.join(lines) + '\n'
 
 
+COLORS = {'B1': '#2a78d6', 'M2': '#eb6834'}
+MARKERS = {'A100': 'D', 'RTX 4090': 'o'}
+
+
+def plot_seeds(runs, path):
+    """Un punto por entrenamiento; la barra negra es la media ± DE de cada configuración."""
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    from matplotlib.lines import Line2D
+    panels = [('map50_95', 'mAP@0.5:0.95 (Validation)'), ('small_gun_recall', 'Recall de armas pequeñas')]
+    fig, axes = plt.subplots(1, 2, figsize=(3.5, 2.1), dpi=300)
+    for ax, (key, title) in zip(axes, panels):
+        for x, name in enumerate(('B1', 'M2')):
+            group = [r for r in runs if r['experiment'] == name]
+            for i, r in enumerate(group):
+                ax.scatter(x - 0.12 + 0.08 * i, r[key], s=22, marker=MARKERS[r['device']], color=COLORS[name],
+                           edgecolor='white', linewidth=0.6, zorder=3)
+            values = [r[key] for r in group]
+            ax.errorbar(x + 0.27, mean(values), yerr=stdev(values), fmt='_', color='#222222',
+                        markersize=9, capsize=2.5, linewidth=1, zorder=2)
+        ax.set_xticks([0, 1], ['B1', 'M2'])
+        ax.set_xlim(-0.45, 1.6)
+        ax.set_title(title, fontsize=7)
+        ax.tick_params(labelsize=6, length=2)
+        ax.grid(axis='y', color='#dddddd', linewidth=0.5)
+        ax.set_axisbelow(True)
+        for side in ('top', 'right'):
+            ax.spines[side].set_visible(False)
+    handles = [Line2D([], [], marker=m, linestyle='', color='#666666', markersize=4, label=gpu)
+               for gpu, m in MARKERS.items()]
+    handles.append(Line2D([], [], marker='_', linestyle='', color='#222222', markersize=7, label='media ± DE'))
+    fig.legend(handles=handles, loc='lower center', ncol=3, fontsize=6, frameon=False)
+    fig.tight_layout(rect=(0, 0.1, 1, 1), w_pad=1.2)
+    fig.savefig(path, bbox_inches='tight')
+    fig.savefig(Path(path).with_suffix('.pdf'), bbox_inches='tight')
+    plt.close(fig)
+
+
 def write_csv(path, rows):
     with path.open('w', encoding='utf-8', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(f, fieldnames=list(rows[0]), lineterminator='\n')
         writer.writeheader()
         writer.writerows(rows)
 
@@ -122,6 +162,7 @@ def main():
     write_csv(args.output / 'costo_replicas.csv',
               [{'run': k, 'gpu': 'RTX 4090', 'training_hours': round(v, 3)} for k, v in hours.items()])
     (args.output / 'semillas.tex').write_text(latex_table(runs, summary), encoding='utf-8', newline='\n')
+    plot_seeds(runs, args.output / 'semillas.png')
     for s in summary:
         print(f"{s['label']:26s} B1 {s['B1_mean']:.4f} ± {s['B1_sd']:.4f}   M2 {s['M2_mean']:.4f} ± {s['M2_sd']:.4f}"
               f"   M2-B1 {s['difference']:+.4f}   p={s['p_permutation']:.2f}")

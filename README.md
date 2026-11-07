@@ -84,6 +84,18 @@ for exp in B1 M2; do for seed in 0 1 2; do python scripts/validate_yolov5.py $ex
 python scripts/reproduce.py validation --seeds 0 1 2 --experiments B1 M2
 ```
 
+## Figuras del artículo
+
+| Figura | Archivo | Comando |
+|---|---|---|
+| Armas pequeñas omitidas por M2 | `results/paper_figures/armas_omitidas.png` | `python scripts/paper_figures.py` |
+| mAP@0.5:0.95 por época | `results/final_summary/figures/fig01_map5095_epochs_B1_M1_M2.png` | `python scripts/import_final_results.py --notebook ../01_B1_YOLOv5s.ipynb --figures` |
+| Curva Precision–Recall de gun | `results/workstation/grupo/gun_pr.png` | `python scripts/reproduce.py report --split val --seeds 0` |
+| Variabilidad entre semillas | `results/workstation/semillas/semillas.pdf` | `python scripts/seed_summary.py` |
+| Falsos positivos por localización | `results/paper_figures/falsos_positivos.png` | `python scripts/paper_figures.py` |
+
+`paper_figures.py` lee las imágenes de Validation de la carpeta configurada en `configs/paths.local.json` (o de la indicada con `--images`) y guarda en `armas_omitidas.csv` la lista de objetos mostrados.
+
 ## Costo computacional
 
 | Entrenamientos | GPU | Horas |
@@ -245,7 +257,7 @@ El repositorio reúne código, configuraciones, resultados y presentación. La e
 | Dina Yesica Huamán Huallpa | Planteamiento del problema; preparación del dataset, notebook y entrenamiento de B1 junto con Jose Gabriel Laymito Quispe; análisis de errores y preparación de M1; documentación del código; redacción del artículo y diapositivas. |
 | Jose Miguel Alvarado Moreno | Integración del repositorio y automatización del flujo (auditoría de datos, entrenamiento, validación y exportación); reevaluación de B1, M1 y M2 en RTX 4090; réplicas de B1 y M2 con tres semillas y análisis de variabilidad; análisis de errores, umbrales y rendimiento; pruebas y documentación. |
 | Frank Huaman Cancho | Interpretación de resultados; revisión y mejora del artículo; revisión del código Python y de la estructura del pipeline; diapositivas. |
-| Christopher Nuñez |  |
+| Christopher Núñez Varillas |  |
 
 ## Alcance y fuentes
 
