@@ -116,6 +116,7 @@ def audit(root, output):
         raise ValueError('Fuga entre particiones: consultar auditoría')
     return result
 
+
 """
     Comprueba que los datos no hayan sido alterados después de la auditoría.
     Usa los hashes SHA256 guardados para garantizar reproducibilidad.
