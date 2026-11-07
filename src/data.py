@@ -1,4 +1,4 @@
-"""Extracción de datos y comprobación de imágenes, etiquetas y particiones."""
+# Extracción de datos y comprobación de imágenes, etiquetas y particiones.
 from collections import Counter, defaultdict
 from pathlib import Path
 from zipfile import ZipFile
@@ -40,8 +40,8 @@ def labels(root, split, stem):
         out.append([int(c), x, y, w, h])
     return out
 
-""" Descomprime el dataset y aplica medidas de seguridad para evitar vulnerabilidades (Zip Slip).
-    Extrae en una carpeta temporal y luego la renombra para evitar datos corruptos. """
+# Descomprime el dataset y aplica medidas de seguridad para evitar vulnerabilidades (Zip Slip).
+# Extrae en una carpeta temporal y luego la renombra para evitar datos corruptos.
 def extract(archive, target):
     target = Path(target).resolve()
     if target.exists():
@@ -115,12 +115,8 @@ def audit(root, output):
     if not result['valid']:
         raise ValueError('Fuga entre particiones: consultar auditoría')
     return result
-
-
-"""
-    Comprueba que los datos no hayan sido alterados después de la auditoría.
-    Usa los hashes SHA256 guardados para garantizar reproducibilidad.
-    """
+    #  Comprueba que los datos no hayan sido alterados después de la auditoría.
+    #  Usa los hashes SHA256 guardados para garantizar reproducibilidad.
 def verify_manifest(root, audit_file):
     from .common import read_json
     root = Path(root)
