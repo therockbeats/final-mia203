@@ -198,7 +198,7 @@ El repositorio reúne código, configuraciones, resultados y presentación. La e
 | Jose Gabriel Laymito Quispe | Preparación del dataset y desarrollo experimental; entrenamiento B1/M1/M2, análisis de errores y evaluación final. |
 | Dina Yesica Huamán Huallpa | Desarrollo inicial conjunto: preparación del dataset, notebook B1, entrenamiento del baseline, análisis de errores y preparación de M1. |
 | Jose Miguel Alvarado Moreno | Integración del repositorio y automatización; reevaluación B1/M1/M2 en RTX 4090, análisis de errores, umbrales y rendimiento, pruebas funcionales y documentación. |
-| Frank Huaman Cancho | |
+| Frank Huaman Cancho | Revisión, documentación, mejora de informe, revisión de código python y de la estructura del pipeline |
 | Christopher Nuñez | |
 
 ## Alcance y fuentes
